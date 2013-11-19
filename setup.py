@@ -6,7 +6,7 @@ import django_materialized_views
 setup(
     name = "django-materialized-views",
     version = django_materialized_views.__version__,
-    #packages = find_packages(),
+    packages = find_packages(),
     author = "Chris Spencer",
     author_email = "chrisspen@gmail.com",
     description = "",
