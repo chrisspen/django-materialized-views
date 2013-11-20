@@ -14,27 +14,27 @@ class MaterializedView(object):
             cls.do_delete(**kwargs)
 
     @classmethod
-    def do_insert(cls):
+    def do_insert(cls, *args, **kwargs):
         return
 
     @classmethod
-    def do_update(cls):
+    def do_update(cls, *args, **kwargs):
         return
 
     @classmethod
-    def do_delete(cls):
+    def do_delete(cls, *args, **kwargs):
         return
     
     @classmethod
-    def needs_insert(cls):
+    def needs_insert(cls, *args, **kwargs):
         return False
 
     @classmethod
-    def needs_update(cls):
+    def needs_update(cls, *args, **kwargs):
         return False
         
     @classmethod
-    def needs_delete(cls):
+    def needs_delete(cls, *args, **kwargs):
         return False
 
     @classmethod
