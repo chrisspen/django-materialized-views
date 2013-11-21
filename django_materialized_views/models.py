@@ -5,13 +5,13 @@ class MaterializedView(object):
     """
     
     @classmethod
-    def materialize(cls, do_insert=True, do_update=True, do_delete=True, **kwargs):
+    def materialize(cls, do_insert=True, do_update=True, do_delete=True, stripe=None, **kwargs):
         if do_insert:
-            cls.do_insert(**kwargs)
+            cls.do_insert(stripe=stripe, **kwargs)
         if do_update:
-            cls.do_update(**kwargs)
+            cls.do_update(stripe=stripe, **kwargs)
         if do_delete:
-            cls.do_delete(**kwargs)
+            cls.do_delete(stripe=stripe, **kwargs)
 
     @classmethod
     def do_insert(cls, *args, **kwargs):
