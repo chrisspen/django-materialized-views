@@ -17,6 +17,7 @@ def update(**kwargs):
     """
     Iterate over all materilized view models and materializes them.
     """
+    reraise = kwargs.get('reraise')
     limit_to_models = map(str.strip, kwargs.get('models', '').split(','))
     for mdl in MaterializedView.__subclasses__():
         n = mdl.__name__
@@ -26,6 +27,8 @@ def update(**kwargs):
             print>>sys.stdout, 'Updating materialized view %s...' % str(mdl)
             mdl.materialize(**kwargs)
         except Exception, e:
+            if reraise:
+                raise
             print>>sys.stderr, 'Error while materializing view %s:' % str(mdl)
             print>>sys.stderr, e
 
@@ -47,6 +50,10 @@ class Command(BaseCommand):
         make_option('--models',
             default='',
             dest='models'),
+        make_option('--reraise',
+            default=False,
+            action='store_true',
+            dest='reraise'),
         )
 
     def handle(self, *args, **options):
