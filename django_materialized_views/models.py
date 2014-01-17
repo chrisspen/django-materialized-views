@@ -4,14 +4,22 @@ class MaterializedView(object):
     An interface for managing periodically updated materialized views.
     """
     
+    stripable = False
+    
+    def print_status(self, message):
+        print message
+    
     @classmethod
-    def materialize(cls, do_insert=True, do_update=True, do_delete=True, stripe=None, **kwargs):
+    def materialize(cls, do_insert=True, do_update=True, do_delete=True, stripe=None, print_status=None, **kwargs):
+        if not self.stripable and stripe is not None:
+            return
+        print_status = print_status or self.print_status
         if do_insert:
-            cls.do_insert(stripe=stripe, **kwargs)
+            cls.do_insert(stripe=stripe, print_status=print_status, **kwargs)
         if do_update:
-            cls.do_update(stripe=stripe, **kwargs)
+            cls.do_update(stripe=stripe, print_status=print_status, **kwargs)
         if do_delete:
-            cls.do_delete(stripe=stripe, **kwargs)
+            cls.do_delete(stripe=stripe, print_status=print_status, **kwargs)
 
     @classmethod
     def do_insert(cls, *args, **kwargs):
