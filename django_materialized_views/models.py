@@ -1,3 +1,39 @@
+from django.db import models
+from django.utils.translation import ugettext, ugettext_lazy as _
+
+def parse_stripe(stripe):
+    stripe_num = None
+    stripe_mod = None
+    if stripe:
+        assert isinstance(stripe, basestring) and len(stripe) == 2
+        stripe_num,stripe_mod = stripe
+        stripe_num = int(stripe_num)
+        stripe_mod = int(stripe_mod)
+        assert stripe_num < stripe_mod
+    return stripe_num, stripe_mod
+
+class MaterializedViewControl(models.Model):
+    
+    name = models.CharField(max_length=500, blank=False, null=False)
+    
+    enabled = models.BooleanField(default=True)
+    
+    stripable = models.BooleanField(
+        default=False,
+        help_text=_('''If true, implies insert/update/delete methods accept
+            a valid stripe parameter that tell them to segment query during
+            multiprocessing.'''))
+    
+    include_in_batch = models.BooleanField(
+        default=True,
+        help_text=_('''If true, will be materialized when the
+            update_materialized_views command is run with no model name
+            specified. This is useful when a specific model is especially
+            long-running or should be rarely or conditionally run or otherwise
+            not run with the other views.'''))
+    
+    class Meta:
+        verbose_name = _('materialized view control')
 
 class MaterializedView(object):
     """
@@ -6,14 +42,19 @@ class MaterializedView(object):
     
     stripable = False
     
-    def print_status(self, message):
+    include_in_batch = True
+    
+    def print_status(cls, message):
         print message
     
     @classmethod
     def materialize(cls, do_insert=True, do_update=True, do_delete=True, stripe=None, print_status=None, **kwargs):
-        if not self.stripable and stripe is not None:
+        if not cls.stripable and stripe is not None and stripe[0] != '0':
+            # If this view isn't stripable, then only process the first stripe.
+            #stripe = None
             return
-        print_status = print_status or self.print_status
+        #print 'running stripe:',stripe
+        print_status = print_status or cls.print_status
         if do_insert:
             cls.do_insert(stripe=stripe, print_status=print_status, **kwargs)
         if do_update:
