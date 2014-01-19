@@ -33,8 +33,12 @@ def is_power_of_two(x):
     return (x & (x - 1)) == 0
 
 def get_control(mdl):
+    app_label = None
+    if hasattr(mdl, '_meta') and hasattr(mdl._meta, 'app_label'):
+        app_label = mdl._meta.app_label
     control, _ = MaterializedViewControl.objects.get_or_create(
         name=mdl.__name__,
+        app_label=app_label,
         defaults=dict(
             stripable=mdl.stripable,
             include_in_batch=mdl.include_in_batch,
@@ -82,9 +86,9 @@ class Command(BaseCommand):
         self.start_times = {} # {key:start_time}
         
         if options['list']:
-            print 'name,include_in_batch'
             for mdl in sorted(MaterializedView.__subclasses__(), key=lambda _: _.__name__):
-                print '%s,%s' % (mdl.__name__, mdl.include_in_batch)
+                control = get_control(mdl)
+                print mdl.__name__, mdl._meta.app_label
             return
         
         self.status = None

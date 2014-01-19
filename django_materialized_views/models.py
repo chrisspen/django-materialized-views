@@ -14,19 +14,31 @@ def parse_stripe(stripe):
 
 class MaterializedViewControl(models.Model):
     
-    name = models.CharField(max_length=500, blank=False, null=False)
+    name = models.CharField(
+        max_length=500,
+        blank=False,
+        null=False,
+        editable=False)
     
-    enabled = models.BooleanField(default=True)
+    app_label = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        editable=False)
+    
+    enabled = models.BooleanField(
+        default=True,
+        help_text=_('If checked, this model will be routinely updated.'))
     
     stripable = models.BooleanField(
         default=False,
-        help_text=_('''If true, implies insert/update/delete methods accept
+        help_text=_('''If checked, implies insert/update/delete methods accept
             a valid stripe parameter that tell them to segment query during
             multiprocessing.'''))
     
     include_in_batch = models.BooleanField(
         default=True,
-        help_text=_('''If true, will be materialized when the
+        help_text=_('''If checked, will be materialized when the
             update_materialized_views command is run with no model name
             specified. This is useful when a specific model is especially
             long-running or should be rarely or conditionally run or otherwise
@@ -34,6 +46,9 @@ class MaterializedViewControl(models.Model):
     
     class Meta:
         verbose_name = _('materialized view control')
+        unique_together = (
+            ('name', 'app_label'),
+        )
 
 class MaterializedView(object):
     """
