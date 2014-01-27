@@ -1,6 +1,12 @@
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+try:
+    from admin_steroids.utils import StringWithTitle
+    APP_LABEL = StringWithTitle('django_materialized_views', 'Materialized Views')
+except ImportError:
+    APP_LABEL = 'django_materialized_views'
+    
 def parse_stripe(stripe):
     stripe_num = None
     stripe_mod = None
@@ -45,7 +51,9 @@ class MaterializedViewControl(models.Model):
             not run with the other views.'''))
     
     class Meta:
-        verbose_name = _('materialized view control')
+        app_label = APP_LABEL
+        verbose_name = _('control')
+        verbose_name_plural = _('controls')
         unique_together = (
             ('name', 'app_label'),
         )

@@ -86,9 +86,12 @@ class Command(BaseCommand):
         self.start_times = {} # {key:start_time}
         
         if options['list']:
-            for mdl in sorted(MaterializedView.__subclasses__(), key=lambda _: _.__name__):
+            for mdl in sorted(MaterializedView.__subclasses__(), key=lambda _: (_._meta.app_label, _.__name__)):
+                if hasattr(mdl, '_meta') and mdl._meta.abstract:
+                    # Ignore abstract Django models.
+                    continue
                 control = get_control(mdl)
-                print mdl.__name__, mdl._meta.app_label
+                print '%s.%s' % (mdl._meta.app_label, mdl.__name__)
             return
         
         self.status = None
