@@ -14,12 +14,23 @@ class Migration(SchemaMigration):
                       keep_default=False)
 
         # Adding unique constraint on 'MaterializedViewControl', fields ['name', 'app_label']
-        db.create_unique(u'django_materialized_views_materializedviewcontrol', ['name', 'app_label'])
+        try:
+            # MySQL doesn't allow this due to the key length being too long,
+            # so it'll just have to do without.
+            # e.g. "Specified key was too long; max key length is 767 bytes"
+            # If this is a deal breaker, I recommend using a better database
+            # like PostgreSQL.
+            db.create_unique(u'django_materialized_views_materializedviewcontrol', ['name', 'app_label'])
+        except Exception, e:
+            pass
 
 
     def backwards(self, orm):
         # Removing unique constraint on 'MaterializedViewControl', fields ['name', 'app_label']
-        db.delete_unique(u'django_materialized_views_materializedviewcontrol', ['name', 'app_label'])
+        try:
+            db.delete_unique(u'django_materialized_views_materializedviewcontrol', ['name', 'app_label'])
+        except Exception, e:
+            pass
 
         # Deleting field 'MaterializedViewControl.app_label'
         db.delete_column(u'django_materialized_views_materializedviewcontrol', 'app_label')
