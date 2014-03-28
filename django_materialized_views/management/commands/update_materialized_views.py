@@ -97,7 +97,7 @@ class Command(BaseCommand):
         self.status = None
         self.progress = collections.OrderedDict()
         limit_to_models = map(str.strip, [_ for _ in options.get('models', '').split(',') if _.strip()])
-        all_model_names = set(mdl.__name__ for mdl in MaterializedView.__subclasses__())
+        all_model_names = set(mdl._meta.app_label+'.'+mdl.__name__ for mdl in MaterializedView.__subclasses__())
         for mdl_name in limit_to_models:
             assert mdl_name in all_model_names, 'Invalid model name: %s' % (mdl_name,)
         total_count = len(MaterializedView.__subclasses__())
@@ -111,7 +111,7 @@ class Command(BaseCommand):
             processes = []
             self.status = Queue()
             for mdl in MaterializedView.__subclasses__():
-                n = mdl.__name__
+                n = mdl._meta.app_label+'.'+mdl.__name__
                 control = get_control(mdl)
                 if not control.enabled:
                     continue
