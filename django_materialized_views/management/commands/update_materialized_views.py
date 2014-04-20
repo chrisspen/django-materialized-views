@@ -50,13 +50,13 @@ class Command(BaseCommand):
     args = ''
     option_list = BaseCommand.option_list + (
         make_option('--do_insert',
-            default=True,
+            default=1,
             dest='do_insert'),
         make_option('--do_update',
-            default=True,
+            default=1,
             dest='do_update'),
         make_option('--do_delete',
-            default=True,
+            default=1,
             dest='do_delete'),
 #        make_option('--stripe',
 #            dest='stripe'),
