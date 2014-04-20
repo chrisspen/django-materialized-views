@@ -143,20 +143,27 @@ class Command(BaseCommand):
                     self.print_progress()
             print 'All processes complete.'
         else:
+            ran_model = False
             for mdl in MaterializedView.__subclasses__():
-                n = mdl.__name__
+                n = mdl._meta.app_label+'.'+mdl.__name__
                 control = get_control(mdl)
                 if not control.enabled:
+                    print 'Skipping model %s because it is not enabled.' % (n,)
                     continue
                 if limit_to_models:
                     if n not in limit_to_models:
+                        print 'Skipping model %s because it is not in the specified list.' % (n,)
                         continue
                 else:
                     if not control.include_in_batch:
                         # This view must be evaluated separately.
+                        print 'Skipping model %s because its marked to be ran separately.' % (n,)
                         continue
                 kwargs['status'] = self.status
                 self.update(mdl, **kwargs)
+                ran_model = True
+            if not ran_model and limit_to_models:
+                raise Exception, 'Specified models not run.'
 
     def print_progress(self, clear=True, newline=True):
         if self.last_progress_refresh and (datetime.now()-self.last_progress_refresh).seconds < 0.5:
