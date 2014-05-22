@@ -63,61 +63,67 @@ class MaterializedView(object):
     An interface for managing periodically updated materialized views.
     """
     
-    stripable = False
+    matview_stripable = False
     
-    include_in_batch = True
+    matview_include_in_batch = True
     
     def print_status(cls, message):
         print message
     
     @classmethod
-    def materialize(cls, do_insert=True, do_update=True, do_delete=True, stripe=None, print_status=None, **kwargs):
-        if not cls.stripable and stripe is not None and stripe[0] != '0':
+    def matview_materialize(cls,
+        do_insert=True,
+        do_update=True,
+        do_delete=True,
+        stripe=None,
+        print_status=None,
+        **kwargs):
+        
+        if not cls.matview_stripable and stripe is not None and stripe[0] != '0':
             # If this view isn't stripable, then only process the first stripe.
-            #stripe = None
             return
-        #print 'running stripe:',stripe
+        
         print_status = print_status or cls.print_status
         if do_insert:
-            cls.do_insert(stripe=stripe, print_status=print_status, **kwargs)
+            cls.matview_insert(stripe=stripe, print_status=print_status, **kwargs)
         if do_update:
-            cls.do_update(stripe=stripe, print_status=print_status, **kwargs)
+            cls.matview_update(stripe=stripe, print_status=print_status, **kwargs)
         if do_delete:
-            cls.do_delete(stripe=stripe, print_status=print_status, **kwargs)
+            cls.matview_delete(stripe=stripe, print_status=print_status, **kwargs)
 
     @classmethod
-    def do_insert(cls, *args, **kwargs):
-        return
+    def matview_insert(cls, *args, **kwargs):
+        raise NotImplementedError
 
     @classmethod
-    def do_update(cls, *args, **kwargs):
-        return
+    def matview_update(cls, *args, **kwargs):
+        raise NotImplementedError
 
     @classmethod
-    def do_delete(cls, *args, **kwargs):
-        return
+    def matview_delete(cls, *args, **kwargs):
+        raise NotImplementedError
     
     @classmethod
-    def needs_insert(cls, *args, **kwargs):
-        return False
+    def matview_needs_insert(cls, *args, **kwargs):
+        raise NotImplementedError
 
     @classmethod
-    def needs_update(cls, *args, **kwargs):
-        return False
+    def matview_needs_update(cls, *args, **kwargs):
+        raise NotImplementedError
         
     @classmethod
-    def needs_delete(cls, *args, **kwargs):
-        return False
+    def matview_needs_delete(cls, *args, **kwargs):
+        raise NotImplementedError
 
     @classmethod
-    def is_fresh(cls):
-        needs_insert = cls.needs_insert()
+    def matview_is_fresh(cls):
+        needs_insert = cls.matview_needs_insert()
         if needs_insert:
             return False
-        needs_update = cls.needs_update()
+        needs_update = cls.matview_needs_update()
         if needs_update:
             return False
-        needs_delete = cls.needs_delete()
+        needs_delete = cls.matview_needs_delete()
         if needs_delete:
             return False
         return True

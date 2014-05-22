@@ -40,8 +40,8 @@ def get_control(mdl):
         name=mdl.__name__,
         app_label=app_label,
         defaults=dict(
-            stripable=mdl.stripable,
-            include_in_batch=mdl.include_in_batch,
+            stripable=mdl.matview_stripable,
+            include_in_batch=mdl.matview_include_in_batch,
         ))
     return control
 
@@ -257,7 +257,7 @@ class Command(BaseCommand):
         
         try:
             print_status('Updating materialized view %s...' % str(mdl))
-            mdl.materialize(print_status=print_status, **kwargs)
+            mdl.matview_materialize(print_status=print_status, **kwargs)
             print_status('Done.')
         except Exception, e:
             if reraise:
