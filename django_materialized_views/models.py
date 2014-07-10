@@ -21,13 +21,13 @@ def parse_stripe(stripe):
 class MaterializedViewControl(models.Model):
     
     name = models.CharField(
-        max_length=500,
+        max_length=250,
         blank=False,
         null=False,
         editable=False)
     
     app_label = models.CharField(
-        max_length=500,
+        max_length=250,
         blank=True,
         null=True,
         editable=False)
