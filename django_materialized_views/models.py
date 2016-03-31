@@ -1,3 +1,7 @@
+from __future__ import print_function
+
+import six
+
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -11,7 +15,7 @@ def parse_stripe(stripe):
     stripe_num = None
     stripe_mod = None
     if stripe:
-        assert isinstance(stripe, basestring) and len(stripe) == 2
+        assert isinstance(stripe, six.string_types) and len(stripe) == 2
         stripe_num,stripe_mod = stripe
         stripe_num = int(stripe_num)
         stripe_mod = int(stripe_mod)
@@ -68,7 +72,7 @@ class MaterializedView(object):
     matview_include_in_batch = True
     
     def print_status(cls, message):
-        print message
+        print(message)
     
     @classmethod
     def matview_materialize(cls,
